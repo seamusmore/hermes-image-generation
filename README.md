@@ -8,6 +8,20 @@ AI image generation skill with provider-based architecture.
 - **Detailed Reference**: See [`references/image-editor.md`](references/image-editor.md)
 - **Provider Authoring Guide**: See [`references/provider-authoring-guide.md`](references/provider-authoring-guide.md)
 
+## Configuration
+
+API keys are read from `~/.hermes/.env`. Create or edit the file and add:
+
+```bash
+# Alibaba Cloud DashScope (required for WAN 2.7, especially image-to-image)
+BAILIAN_API_KEY=sk-xxxxxxxxxxxxxxxx
+
+# Zhipu AI (free model, only text-to-image)
+ZHIPU_API_KEY=your_zhipu_api_key
+```
+
+**Default output directory**: `~/.hermes/images/`
+
 ## Architecture
 
 ```
