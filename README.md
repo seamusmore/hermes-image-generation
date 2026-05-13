@@ -8,6 +8,25 @@ AI image generation skill with provider-based architecture.
 - **Detailed Reference**: See [`references/image-editor.md`](references/image-editor.md)
 - **Provider Authoring Guide**: See [`references/provider-authoring-guide.md`](references/provider-authoring-guide.md)
 
+## Installation
+
+### Recommended (via Hermes CLI)
+
+```bash
+hermes skills install https://github.com/seamusmore/hermes-image-generation.git
+```
+
+Then restart the gateway for the skill to take effect.
+
+### Manual
+
+```bash
+git clone https://github.com/seamusmore/hermes-image-generation.git \
+  ~/.hermes/skills/image-generation
+```
+
+Then restart the gateway.
+
 ## Configuration
 
 API keys are read from `~/.hermes/.env`. Create or edit the file and add:
