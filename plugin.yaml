@@ -1,0 +1,9 @@
+name: image-generation
+version: 1.0.0
+description: "Multi-model image generation backend — WAN 2.7, CogView-3-Flash, and Agnes Image 2.1 Flash."
+author: Luna
+kind: backend
+requires_env:
+  - DASHSCOPE_API_KEY
+  - ZHIPU_API_KEY
+  - AGNES_API_KEY

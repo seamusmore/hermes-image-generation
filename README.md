@@ -1,73 +1,98 @@
-# Image Generation
+# Hermes Image Generation Plugin
 
-AI image generation skill with provider-based architecture.
+Multi-model image generation backend for [Hermes Agent](https://github.com/NousResearch/hermes-agent). One plugin, three models.
 
-## Quick Links
+## Models
 
-- **Usage**: See [`SKILL.md`](SKILL.md)
-- **Detailed Reference**: See [`references/image-editor.md`](references/image-editor.md)
-- **Provider Authoring Guide**: See [`references/provider-authoring-guide.md`](references/provider-authoring-guide.md)
+| Model ID | Backend | API | Text-to-Image | Image-to-Image | Price |
+|----------|---------|-----|:---:|:---:|:---:|
+| `wan2.7-image` | WAN 2.7 | Alibaba DashScope | ✅ | ✅ | Paid |
+| `cogview-3-flash` | CogView-3-Flash | Zhipu AI | ✅ | ❌ | Free |
+| `agnes-image-2.1-flash` | Agnes Image 2.1 | Agnes AI | ✅ | ✅ | Free |
 
 ## Installation
 
-### Recommended (via Hermes CLI)
+### Hermes CLI (recommended)
 
 ```bash
-hermes skills install https://github.com/seamusmore/hermes-image-generation.git
+hermes plugins install https://github.com/seamusmore/hermes-image-generation.git
 ```
-
-Then restart the gateway for the skill to take effect.
 
 ### Manual
 
 ```bash
 git clone https://github.com/seamusmore/hermes-image-generation.git \
-  ~/.hermes/skills/image-generation
+  ~/.hermes/plugins/image_gen/image-generation
+
+hermes plugins enable image-generation
 ```
 
-Then restart the gateway.
+Restart the gateway:
+
+```bash
+hermes gateway restart
+```
 
 ## Configuration
 
-API keys are read from `~/.hermes/.env`. Create or edit the file and add:
+Set the provider in `config.yaml`:
+
+```yaml
+image_gen:
+  provider: image-generation
+  model: wan2.7-image
+```
+
+Or via CLI:
 
 ```bash
-# Alibaba Cloud DashScope (required for WAN 2.7, especially image-to-image)
-BAILIAN_API_KEY=sk-xxxxxxxxxxxxxxxx
-
-# Zhipu AI (free model, only text-to-image)
-ZHIPU_API_KEY=your_zhipu_api_key
+hermes config set image_gen.provider image-generation
+hermes config set image_gen.model wan2.7-image
 ```
 
-**Default output directory**: `~/.hermes/images/`
+API keys in `~/.hermes/.env`:
 
-## Architecture
-
-```
-image-generation/
-├── scripts/
-│   ├── generate_image.py       # General image generation entry
-│   └── generate_sequential.py  # Sequential/storyboard generation
-├── providers/                  # Pluggable provider architecture
-│   ├── __init__.py             # Registry + factory functions
-│   ├── base.py                 # Abstract base class with capability declarations
-│   ├── utils.py                # Shared utilities
-│   ├── wan_provider.py         # WAN 2.7 (txt2img + img2img + sequential)
-│   └── cogview_provider.py     # CogView-3-Flash (txt2img only, free)
-├── references/
-│   ├── image-editor.md
-│   └── provider-authoring-guide.md
-├── SKILL.md
-├── LICENSE
-└── README.md
+```bash
+DASHSCOPE_API_KEY=sk-xxxxxxxxxxxxxxxx   # WAN 2.7
+ZHIPU_API_KEY=your_zhipu_api_key        # CogView-3-Flash
+AGNES_API_KEY=your_agnes_api_key        # Agnes Image 2.1
 ```
 
-## Adding a New Model
+## Switching Models
 
-1. Create a new provider file under `providers/` inheriting `ImageProvider`
-2. Declare capabilities and implement `generate()` (and optionally `generate_sequential()`)
-3. Register in `providers/__init__.py`
-4. No script changes needed
+Change `image_gen.model` in `config.yaml` or via CLI:
+
+```bash
+hermes config set image_gen.model wan2.7-image
+hermes config set image_gen.model cogview-3-flash
+hermes config set image_gen.model agnes-image-2.1-flash
+```
+
+Restart gateway after switching. Or use `hermes tools` → Image Generation to pick interactively.
+
+## Usage
+
+In chat, describe what you want and Hermes will call `image_generate`:
+
+> "Generate a landscape of a mountain lake at sunset"
+
+### Aspect Ratios
+
+`landscape` (16:9), `square` (1:1), `portrait` (9:16).
+
+### Image-to-Image
+
+WAN 2.7 and Agnes support image editing. Attach or reference an image and describe the edit:
+
+> "Add snow to the mountain peaks in this photo"
+
+### Resolution Mapping
+
+| Aspect Ratio | WAN 2.7 | CogView | Agnes |
+|-------------|---------|---------|-------|
+| landscape | 1280×720 | 1344×768 | 2K 16:9 |
+| square | 1280×1280 | 1024×1024 | 2K 1:1 |
+| portrait | 720×1280 | 768×1344 | 2K 9:16 |
 
 ## License
 
